@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat with Rahul Khanjire Sir</title>
+    <style>
+        /* --- WhatsApp-like CSS --- */
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #e5ddd5;
+        }
+
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            max-width: 600px; /* Limit width on large screens */
+            margin: 0 auto; /* Center on large screens */
+            background-color: #fff;
+            box-shadow: 0 1px 1px 0 rgba(0,0,0,0.06), 0 2px 5px 0 rgba(0,0,0,0.2);
+        }
+
+        /* Header */
+        .chat-header {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background-color: #075e54;
+            color: white;
+        }
+
+        .profile-image {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+            object-fit: cover; /* Ensure image fits nicely */
+        }
+
+        .header-info {
+            flex-grow: 1;
+        }
+
+        .header-name {
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .header-status {
+            font-size: 0.8em;
+            color: #dcf8c6;
+        }
+
+        /* Chat Body */
+        .chat-body {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background-image: url('https://i.pinimg.com/originals/97/c0/07/97c00759d90d780d9b8e9f5c8a8d7d5e.jpg'); /* WhatsApp doodle background */
+            background-repeat: repeat;
+            background-size: 300px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        /* Messages */
+        .message {
+            max-width: 80%;
+            padding: 10px;
+            border-radius: 7.5px;
+            position: relative;
+            word-wrap: break-word;
+            font-size: 0.9em;
+        }
+
+        .message.received {
+            align-self: flex-start;
+            background-color: #fff;
+            border-top-left-radius: 0;
+        }
+
+        .message.sent {
+            align-self: flex-end;
+            background-color: #dcf8c6;
+            border-top-right-radius: 0;
+        }
+
+        .message-time {
+            display: block;
+            font-size: 0.7em;
+            color: #999;
+            text-align: right;
+            margin-top: 5px;
+        }
+
+        /* Chat Footer (Input Area) */
+        .chat-footer {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background-color: #f0f0f0;
+        }
+
+        #message-input {
+            flex-grow: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 20px;
+            margin-right: 10px;
+            font-size: 1em;
+            outline: none;
+        }
+
+        #send-button {
+            background-color: #075e54;
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1.2em;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <img src="profile-image.jpg" alt="Rahul Khanjire Sir" class="profile-image">
+            <div class="header-info">
+                <div class="header-name">Rahul Khanjire Sir (MLA)</div>
+                <div class="header-status">Online</div>
+            </div>
+        </div>
+
+        <div class="chat-body" id="chat-body">
+            <div class="message received">
+                Hello! How can I help you today?
+                <span class="message-time">10:00 AM</span>
+            </div>
+            </div>
+
+        <div class="chat-footer">
+            <input type="text" id="message-input" placeholder="Type a message...">
+            <button id="send-button">
+                ➤ </button>
+        </div>
+    </div>
+
+    <script>
+        // --- Basic JavaScript to handle sending messages (frontend only) ---
+
+        const chatBody = document.getElementById('chat-body');
+        const messageInput = document.getElementById('message-input');
+        const sendButton = document.getElementById('send-button');
+
+        function getCurrentTime() {
+            const now = new Date();
+            return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function addMessage(text, type) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message', type);
+
+            const messageText = document.createTextNode(text);
+            messageDiv.appendChild(messageText);
+
+            const timeSpan = document.createElement('span');
+            timeSpan.classList.add('message-time');
+            timeSpan.textContent = getCurrentTime();
+            messageDiv.appendChild(timeSpan);
+
+            chatBody.appendChild(messageDiv);
+            // Scroll to bottom
+            chatBody.scrollTop = chatBody.scrollHeight;
+        }
+
+        function sendMessage() {
+            const messageText = messageInput.value.trim();
+            if (messageText !== "") {
+                // Add user's message
+                addMessage(messageText, 'sent');
+                messageInput.value = ''; // Clear input
+
+                // --- IMPORTANT: Backend Integration Required Here ---
+                // Instead of the `setTimeout` below, you would make a call to your
+                // secure backend server here. Your backend would then call the
+                // Gemini API and return the response.
+                
+                // Simulate a bot response for demonstration
+                setTimeout(() => {
+                    addMessage("This is a simulated response. Please connect a backend to your Gemini API to get real answers.", 'received');
+                }, 1000); 
+            }
+        }
+
+        sendButton.addEventListener('click', sendMessage);
+        messageInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+</html>
