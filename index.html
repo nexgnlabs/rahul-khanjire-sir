@@ -3,25 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Rahul Khanjire Sir - Official Chat</title>
+    <title>Rahul Khanjire (Prabhag 9) - WhatsApp</title>
     <style>
         :root {
-            --wa-green: #00a884;
-            --wa-dark: #111b21;
-            --wa-header: #202c33;
+            /* Modern WhatsApp Colors */
+            --wa-teal-dark: #008069;
+            --wa-teal-light: #00a884;
+            --wa-bg-dark: #111b21;
+            --wa-header-bg: #202c33;
+            --wa-panel-bg: #202c33;
             --wa-chat-bg: #0b141a;
-            --wa-msg-in: #202c33;
-            --wa-msg-out: #005c4b;
-            --text-primary: #e9edef;
-            --text-secondary: #8696a0;
+            --wa-incoming: #202c33;
+            --wa-outgoing: #005c4b;
+            --wa-white: #e9edef;
+            --wa-gray: #8696a0;
+            --wa-blue-tick: #53bdeb;
         }
 
-        * { box-sizing: border-box; font-family: 'Segoe UI', Helvetica, Arial, sans-serif; }
+        * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
         
         body { 
             margin: 0; padding: 0; 
-            background-color: var(--wa-dark); 
-            color: var(--text-primary); 
+            background-color: var(--wa-chat-bg); 
+            color: var(--wa-white); 
             height: 100vh; display: flex; flex-direction: column; 
             overflow: hidden;
         }
@@ -29,172 +33,214 @@
         /* HEADER */
         .header {
             display: flex; align-items: center; padding: 10px 16px;
-            background-color: var(--wa-header); border-bottom: 1px solid #333;
+            background-color: var(--wa-header-bg); 
             height: 60px; flex-shrink: 0; cursor: pointer;
+            box-shadow: 0 1px 0 rgba(255,255,255,0.05);
+            z-index: 10;
         }
-        .back-btn { margin-right: 10px; font-size: 20px; color: var(--text-primary); }
-        .avatar {
-            width: 40px; height: 40px; border-radius: 50%; object-fit: cover; margin-right: 12px;
-            background: #ccc; border: 1px solid #555;
-        }
-        .info { flex: 1; }
-        .name { font-size: 16px; font-weight: 500; display: flex; align-items: center; gap: 5px; }
-        .verified-tick { color: #00a884; font-size: 14px; } 
-        .status { font-size: 12px; color: var(--text-secondary); }
+        .back-icon { color: var(--wa-white); margin-right: 12px; font-size: 20px; }
         
-        .header-icons { display: flex; gap: 20px; color: var(--text-primary); font-size: 20px; }
+        .avatar-container { position: relative; margin-right: 12px; }
+        .avatar {
+            width: 40px; height: 40px; border-radius: 50%; object-fit: cover;
+            background: #ccc; cursor: pointer;
+        }
+        
+        .info { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+        .name { font-size: 16px; font-weight: 500; color: var(--wa-white); display: flex; align-items: center; gap: 4px; }
+        .verified-badge { color: var(--wa-teal-light); font-size: 14px; } 
+        .status { font-size: 12px; color: var(--wa-gray); margin-top: 2px; }
+        
+        .header-actions { display: flex; gap: 24px; color: var(--wa-white); font-size: 20px; padding-right: 5px; }
+        .icon-btn { cursor: pointer; }
 
-        /* API SETUP PANEL */
+        /* CHAT AREA */
+        .chat-area {
+            flex: 1; overflow-y: auto; padding: 10px 5%;
+            /* WhatsApp Dark Doodle Pattern */
+            background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');
+            background-repeat: repeat; background-size: 350px;
+            background-color: var(--wa-chat-bg);
+            background-blend-mode: overlay;
+            display: flex; flex-direction: column; gap: 8px;
+        }
+
+        /* Date Badge */
+        .date-badge {
+            align-self: center; background: #1e2a30; color: #8696a0;
+            padding: 5px 12px; border-radius: 8px; font-size: 11px; font-weight: 500;
+            margin: 10px 0; text-transform: uppercase; box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+
+        /* Messages */
+        .msg-row { display: flex; width: 100%; margin-bottom: 2px; }
+        .msg-row.sent { justify-content: flex-end; }
+        
+        .msg {
+            max-width: 75%; padding: 6px 10px 8px 12px; border-radius: 8px;
+            font-size: 14.2px; line-height: 19px; position: relative;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.15); word-wrap: break-word;
+        }
+        
+        .msg-in { 
+            background: var(--wa-incoming); 
+            border-top-left-radius: 0; 
+            color: var(--wa-white);
+        }
+        
+        .msg-out { 
+            background: var(--wa-outgoing); 
+            border-top-right-radius: 0; 
+            color: var(--wa-white);
+        }
+
+        .meta {
+            display: flex; align-items: center; justify-content: flex-end;
+            gap: 3px; float: right; margin-left: 10px; margin-top: 4px;
+        }
+        .time { font-size: 11px; color: rgba(255,255,255,0.6); }
+        .tick { font-size: 14px; color: var(--wa-blue-tick); display: none; }
+        .msg-out .tick { display: block; }
+
+        /* INPUT AREA */
+        .footer {
+            min-height: 60px; background: var(--wa-header-bg); padding: 5px 10px;
+            display: flex; align-items: center; gap: 8px; flex-shrink: 0; z-index: 10;
+        }
+        
+        .footer-icon { font-size: 24px; color: var(--wa-gray); padding: 8px; cursor: pointer; transition: 0.2s; }
+        .footer-icon:active { color: var(--wa-teal-light); }
+
+        .input-wrapper {
+            flex: 1; background: #2a3942; border-radius: 20px;
+            display: flex; align-items: center; padding: 9px 12px;
+        }
+        .chat-input {
+            flex: 1; background: transparent; border: none; color: var(--wa-white);
+            font-size: 15px; outline: none; max-height: 100px; overflow-y: auto;
+        }
+        .chat-input::placeholder { color: var(--wa-gray); }
+
+        .mic-btn {
+            background: var(--wa-teal-light); width: 45px; height: 45px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: #fff; font-size: 20px; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            transition: 0.2s;
+        }
+        .mic-btn:active { transform: scale(0.95); }
+
+        /* SETTINGS PANEL */
         #apiPanel {
             position: absolute; top: 60px; right: 10px; width: 300px;
             background: #2a3942; padding: 15px; border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5); z-index: 100;
-            display: none; border: 1px solid #444;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.6); z-index: 100;
+            display: none; border: 1px solid #333;
         }
-        #apiPanel.active { display: block; }
+        #apiPanel.active { display: block; animation: fadeIn 0.2s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        
         #apiKeyInput {
             width: 100%; padding: 10px; background: #111b21; border: 1px solid #555;
-            color: white; border-radius: 5px; margin-top: 5px; font-family: monospace;
+            color: white; border-radius: 8px; margin-top: 5px; font-family: monospace; outline: none;
         }
         .save-btn {
-            width: 100%; padding: 10px; margin-top: 10px; background: var(--wa-green);
-            color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;
+            width: 100%; padding: 10px; margin-top: 12px; background: var(--wa-teal-light);
+            color: #111; border: none; border-radius: 20px; cursor: pointer; font-weight: bold;
         }
 
-        /* CHAT AREA */
-        .chat-container {
-            flex: 1; overflow-y: auto; padding: 20px;
-            background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');
-            background-repeat: repeat; background-size: 400px;
-            display: flex; flex-direction: column; gap: 10px;
-        }
-
-        .msg {
-            max-width: 80%; padding: 8px 12px; border-radius: 8px;
-            font-size: 14.2px; line-height: 19px; position: relative;
-            box-shadow: 0 1px 0.5px rgba(0,0,0,0.13);
-        }
-        .msg-in { 
-            align-self: flex-start; background: var(--wa-msg-in); 
-            border-top-left-radius: 0; 
-        }
-        .msg-out { 
-            align-self: flex-end; background: var(--wa-msg-out); 
-            border-top-right-radius: 0; 
-        }
-        
-        .time {
-            font-size: 11px; color: rgba(255,255,255,0.6);
-            float: right; margin-left: 10px; margin-top: 5px;
-        }
-
-        /* FOOTER */
-        .footer {
-            height: 62px; background: var(--wa-header); padding: 5px 10px;
-            display: flex; align-items: center; gap: 10px; flex-shrink: 0;
-        }
-        .emoji-btn, .attach-btn { font-size: 24px; color: var(--text-secondary); cursor: pointer; padding: 5px; }
-        .input-box {
-            flex: 1; padding: 12px 15px; background: #2a3942; border: none;
-            border-radius: 8px; color: white; font-size: 15px; outline: none;
-        }
-        .send-btn {
-            background: var(--wa-green); width: 45px; height: 45px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; border: none;
-            color: white; font-size: 20px; cursor: pointer;
-        }
-
-        @media (min-width: 768px) {
-            body { max-width: 100%; background: #000; justify-content: center; align-items: center; }
+        /* Desktop View */
+        @media (min-width: 900px) {
+            body { align-items: center; background: #000; }
             .app-wrapper { 
                 width: 100%; max-width: 900px; height: 95vh; 
-                display: flex; flex-direction: column; 
-                box-shadow: 0 0 20px rgba(0,0,0,0.5); 
+                display: flex; flex-direction: column; background: var(--wa-chat-bg);
+                box-shadow: 0 0 50px rgba(0,0,0,0.5); border: 1px solid #333;
             }
         }
+        @media (max-width: 899px) { .app-wrapper { width: 100%; height: 100%; } }
     </style>
 </head>
 <body>
 
-<div class="app-wrapper" style="width:100%; height:100%; display:flex; flex-direction:column;">
+<div class="app-wrapper">
     
     <div class="header">
-        <div class="back-btn">←</div>
-        
-        <img src="https://scontent.fpnq7-5.fna.fbcdn.net/v/t39.30808-1/251217068_1124966841618167_5694360626705155112_n.jpg?stp=dst-jpg_s200x200_tt6&_nc_cat=105&ccb=1-7&_nc_sid=2d3e12&_nc_ohc=auzxMQpMmI4Q7kNvwF6lLS8&_nc_oc=AdlLnIfSsgkSSaLEAB5fR4KYbHXv2VgEwvsyjlS9F5lZUYxBhRGWgdX_gZyh9YhBmMzv7iVTadxc2zZzsz88Dypt&_nc_zt=24&_nc_ht=scontent.fpnq7-5.fna&_nc_gid=sCiT-MSn0TkSn20lrHPYQg&oh=00_Afmd9YCSxzlGUdx3dhD2dVPbLpO8RWHiYO3sIbFO_kYxAg&oe=69571180" 
-             onerror="this.src='https://api.dicebear.com/7.x/avataaars/svg?seed=Rahul'" 
-             class="avatar" alt="RK">
-             
-        <div class="info">
-            <div class="name">
-                Rahul Khanjire Sir
-                <span class="verified-tick">✔</span>
-            </div>
+        <div class="back-icon">←</div>
+        <div class="avatar-container">
+            <img src="https://scontent.fpnq7-5.fna.fbcdn.net/v/t39.30808-1/251217068_1124966841618167_5694360626705155112_n.jpg?stp=dst-jpg_s200x200_tt6&_nc_cat=105&ccb=1-7&_nc_sid=2d3e12&_nc_ohc=auzxMQpMmI4Q7kNvwF6lLS8&_nc_oc=AdlLnIfSsgkSSaLEAB5fR4KYbHXv2VgEwvsyjlS9F5lZUYxBhRGWgdX_gZyh9YhBmMzv7iVTadxc2zZzsz88Dypt&_nc_zt=24&_nc_ht=scontent.fpnq7-5.fna&_nc_gid=sCiT-MSn0TkSn20lrHPYQg&oh=00_Afmd9YCSxzlGUdx3dhD2dVPbLpO8RWHiYO3sIbFO_kYxAg&oe=69571180" 
+                 onerror="this.src='https://api.dicebear.com/7.x/avataaars/svg?seed=RK'" 
+                 class="avatar" alt="RK" onclick="toggleSettings()">
+        </div>
+        <div class="info" onclick="toggleSettings()">
+            <div class="name">Rahul Khanjire Sir <span class="verified-badge">✔</span></div>
             <div class="status" id="statusText">Online</div>
         </div>
-        <div class="header-icons">
-            <span onclick="toggleSettings()">⚙️</span> 
-            <span>📞</span>
-            <span>⋮</span>
+        <div class="header-actions">
+            <span class="icon-btn">📹</span>
+            <span class="icon-btn">📞</span>
+            <span class="icon-btn" onclick="toggleSettings()">⋮</span>
         </div>
     </div>
 
     <div id="apiPanel">
-        <label style="color:#aaa; font-size:12px;">GEMINI API KEY (Saved Locally)</label>
+        <label style="color:#8696a0; font-size:12px; font-weight:bold;">GEMINI API KEY (Stored Locally)</label>
         <input type="password" id="apiKey" placeholder="Paste Key Here...">
-        <button class="save-btn" onclick="saveKey()">CONNECT BOT</button>
+        <button class="save-btn" onclick="saveKey()">CONNECT</button>
     </div>
 
-    <div class="chat-container" id="chatBox">
-        <div class="msg msg-in">
-            नमस्कार! मी राहुल खंजिरे बोलतोय. 
-            मी आपल्या सेवेसाठी इथे उपलब्ध आहे. आपल्या समस्या किंवा प्रश्न बिनधास्त मांडा.
-            <span class="time">Now</span>
+    <div class="chat-area" id="chatBox">
+        <div class="date-badge">Today</div>
+        
+        <div class="msg-row">
+            <div class="msg msg-in">
+                नमस्कार! मी राहुल खंजिरे (प्रभाग क्रमांक 9).
+                आपल्या परिसराच्या विकासासाठी मी सदैव कटिबद्ध आहे. आपली समस्या सांगा.
+                <div class="meta"><span class="time">Now</span></div>
+            </div>
         </div>
     </div>
 
     <div class="footer">
-        <div class="emoji-btn">😊</div>
-        <div class="attach-btn">📎</div>
-        <input type="text" id="userInput" class="input-box" placeholder="Message" onkeypress="handleEnter(event)">
-        <button class="send-btn" onclick="sendMessage()">➤</button>
+        <div class="footer-icon">😊</div>
+        <div class="footer-icon">➕</div>
+        <div class="input-wrapper">
+            <input type="text" id="userInput" class="chat-input" placeholder="Message" onkeypress="handleEnter(event)">
+        </div>
+        <div class="mic-btn" id="sendBtn" onclick="sendMessage()">➤</div>
     </div>
 
 </div>
 
 <script>
-    // --- Logic Configuration ---
+    // System Prompt with Specific Info
     const SYSTEM_PROMPT = `
-    ACT AS: Rahul Khanjire (Respected political leader/social worker from Ichalkaranji/Kolhapur region).
-    LANGUAGE: STRICTLY MARATHI (Devanagari script preferred, but simple conversational Marathi).
-    TONE: Polite, authoritative, caring, and solution-oriented. Like a leader talking to a citizen.
-    CONTEXT: You are replying to citizens on WhatsApp.
-    
+    IDENTITY: You are Rahul Khanjire Sir, a respected political leader/social worker from **Prabhag Kramank 9** (Ward No. 9).
+    LANGUAGE: STRICTLY MARATHI (Devanagari). Use formal yet caring language ('Namaskar', 'Dada', 'Tai').
+    CONTEXT: Replying to citizens of your ward on WhatsApp regarding local issues or general greetings.
     RULES:
-    1. Reply ONLY in Marathi.
-    2. Be respectful (Use 'Namaskar', 'Mitra', 'Dada', 'Tai').
-    3. Keep answers concise (WhatsApp style).
-    4. If asked about helping, say you are always ready for public service.
-    5. Never mention you are an AI. Stay in character as Rahul Khanjire.
+    1. Keep replies short (WhatsApp style).
+    2. Always stay polite and solution-oriented.
+    3. If asked about your location/ward, mention "Prabhag Kramank 9".
+    4. Never say you are an AI.
     `;
 
-    // --- Core Functions ---
-
     window.onload = () => {
-        const savedKey = localStorage.getItem('rahul_bot_key');
+        const savedKey = localStorage.getItem('rk_bot_key');
         if (savedKey) document.getElementById('apiKey').value = savedKey;
+        scrollToBottom();
     };
 
     function toggleSettings() {
-        document.getElementById('apiPanel').classList.toggle('active');
+        const panel = document.getElementById('apiPanel');
+        panel.classList.toggle('active');
     }
 
     function saveKey() {
         const key = document.getElementById('apiKey').value.trim();
         if (key) {
-            localStorage.setItem('rahul_bot_key', key);
+            localStorage.setItem('rk_bot_key', key);
             toggleSettings();
-            alert("Bot Connected Successfully! (Key Saved)");
+            alert("Connected! (Key Saved)");
         }
     }
 
@@ -206,62 +252,76 @@
         return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     }
 
+    function scrollToBottom() {
+        const box = document.getElementById('chatBox');
+        box.scrollTop = box.scrollHeight;
+    }
+
     function addMessage(text, type) {
         const box = document.getElementById('chatBox');
-        const div = document.createElement('div');
-        div.className = `msg ${type}`;
-        div.innerHTML = `${text} <span class="time">${getTime()}</span>`;
-        box.appendChild(div);
-        box.scrollTop = box.scrollHeight;
+        const row = document.createElement('div');
+        row.className = `msg-row ${type === 'msg-out' ? 'sent' : ''}`;
+        
+        const content = document.createElement('div');
+        content.className = `msg ${type}`;
+        
+        // Tick HTML for sent messages
+        const tickHtml = type === 'msg-out' ? '<span class="tick">✓✓</span>' : '';
+        
+        content.innerHTML = `${text} <div class="meta"><span class="time">${getTime()}</span>${tickHtml}</div>`;
+        
+        row.appendChild(content);
+        box.appendChild(row);
+        scrollToBottom();
     }
 
     async function sendMessage() {
         const input = document.getElementById('userInput');
         const text = input.value.trim();
-        const key = localStorage.getItem('rahul_bot_key');
+        const key = localStorage.getItem('rk_bot_key');
 
         if (!text) return;
         
         if (!key) {
-            alert("कृपया प्रथम गियर आयकॉन (⚙️) वर क्लिक करून API Key टाका.");
+            alert("Please enter API Key in settings (⋮) first.");
             return;
         }
 
-        // 1. User Message
+        // 1. User Msg
         addMessage(text, 'msg-out');
         input.value = '';
 
-        // 2. Simulate Typing
-        document.getElementById('statusText').innerText = "typing...";
-        document.getElementById('statusText').style.color = "#00a884";
+        // 2. Typing Status
+        const statusEl = document.getElementById('statusText');
+        statusEl.innerText = "typing...";
+        statusEl.style.color = "#00a884";
 
         try {
-            // 3. API Call (Direct to Gemini Flash-Lite)
+            // 3. API Call
             const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${key}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     contents: [
-                        { role: "user", parts: [{ text: SYSTEM_PROMPT + "\n\nUser says: " + text }] }
+                        { role: "user", parts: [{ text: SYSTEM_PROMPT + "\n\nCitizen says: " + text }] }
                     ]
                 })
             });
 
             const data = await response.json();
             
-            // 4. Bot Response
             if (data.candidates && data.candidates[0].content) {
                 const reply = data.candidates[0].content.parts[0].text;
                 addMessage(reply, 'msg-in');
             } else {
-                addMessage("Server error. Please try again.", 'msg-in');
+                addMessage("Server Error. Try again.", 'msg-in');
             }
 
         } catch (error) {
-            addMessage("Network Error. Check internet or API Key.", 'msg-in');
+            addMessage("Network Error.", 'msg-in');
         } finally {
-            document.getElementById('statusText').innerText = "Online";
-            document.getElementById('statusText').style.color = "#8696a0";
+            statusEl.innerText = "Online";
+            statusEl.style.color = "#8696a0";
         }
     }
 </script>
